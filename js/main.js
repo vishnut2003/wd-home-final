@@ -492,3 +492,41 @@ function handleFormSubmit(form) {
   };
   img.src = 'images/hero-family.jpg';
 })();
+
+/* ============================================
+   BEYOND CARDS — Auto-fading photo slideshow
+   Crossfades the images inside each project card
+   visual. Staggered so the three cards don't flip
+   in unison; pauses when the tab is hidden.
+============================================ */
+(function () {
+  const groups = document.querySelectorAll('[data-slides]');
+  if (!groups.length) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const DELAY = 3500; // ms each image stays visible
+
+  groups.forEach((group, gi) => {
+    const slides = Array.from(group.querySelectorAll('.beyond-card-photo'));
+    if (slides.length < 2) return;
+
+    let i = slides.findIndex((s) => s.classList.contains('is-active'));
+    if (i < 0) { i = 0; slides[0].classList.add('is-active'); }
+    let timer = null;
+
+    const advance = () => {
+      slides[i].classList.remove('is-active');
+      i = (i + 1) % slides.length;
+      slides[i].classList.add('is-active');
+    };
+    const start = () => { if (!timer) timer = setInterval(advance, DELAY); };
+    const stop = () => { clearInterval(timer); timer = null; };
+
+    // Stagger each card's start so they cycle out of sync
+    setTimeout(start, gi * 1100);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop(); else start();
+    });
+  });
+})();
