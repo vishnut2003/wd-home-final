@@ -338,7 +338,11 @@ em, i { font-style: normal; }
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: url('images/hero-family.jpg') center 40% / cover no-repeat;
+  background: url('../images/hero-family.jpg') center 40% / cover no-repeat;
+  /* Zoom in slightly and shift the framing so the family sits further
+     left, clear of the form card on the right. */
+  transform: scale(1.18);
+  transform-origin: 74% 42%;
 }
 .hero-bg::after {
   content: "";
