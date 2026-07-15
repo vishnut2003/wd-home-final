@@ -2275,47 +2275,49 @@ em, i { font-style: normal; }
 .team-card {
   background: #fff;
   border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid #E5DDC9;
-  transition: all .3s ease;
+  padding: 40px 26px 34px;
+  text-align: center;
+  border: 1px solid var(--line);
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
 }
-.team-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-.team-photo {
-  aspect-ratio: 4/5;
-  overflow: hidden;
-  background: #E8DDC9;
-  position: relative;
+.team-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
 }
-.team-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform .6s ease;
+.team-avatar {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--red);
+  background: radial-gradient(circle at 32% 28%, #FFF1F0 0%, #F7ECDF 100%);
+  border: 1px solid #F1E4D4;
+  transition: background .35s ease, color .35s ease, transform .35s ease, box-shadow .35s ease;
 }
-.team-card:hover .team-photo img { transform: scale(1.04); }
-.team-photo::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 50%, rgba(28, 31, 38, .4) 100%);
+.team-avatar svg { width: 42px; height: 42px; }
+.team-card:hover .team-avatar {
+  background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+  color: #fff;
+  transform: scale(1.06);
+  box-shadow: 0 12px 26px rgba(249, 49, 47, .28);
 }
 .team-tag {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  background: rgba(250, 246, 240, .92);
-  backdrop-filter: blur(8px);
+  display: inline-block;
   font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 1.4px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
   color: var(--red);
-  padding: 5px 11px;
-  border-radius: 5px;
-  z-index: 1;
+  background: var(--red-tint);
+  padding: 5px 12px;
+  border-radius: 100px;
+  margin-bottom: 13px;
 }
-.team-info { padding: 22px; }
-.team-role { font-weight: 600; font-size: 18px; line-height: 1.3; color: var(--ink); }
-.team-desc { font-size: 13.5px; color: var(--ink-muted); line-height: 1.55; margin-top: 7px; }
+.team-role { font-weight: 700; font-size: 18px; line-height: 1.3; color: var(--ink); }
+.team-desc { font-size: 13.5px; color: var(--ink-muted); line-height: 1.6; margin-top: 9px; }
 
 /* ============================================
    FAQ
