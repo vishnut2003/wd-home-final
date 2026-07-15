@@ -925,50 +925,35 @@
       <div class="exec-center" data-animate>
         <div class="exec-center-inner">
 
-          <!-- Radiating network nodes (SVG) -->
+          <!-- Radiating network nodes (SVG) — all lines converge behind the
+               phone top (170,118); nodes sit clear of the phone's edges. -->
           <svg class="exec-network-svg" viewBox="0 0 340 420" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <!-- Connector lines from phone top to nodes -->
-            <!-- Left nodes -->
-            <line x1="170" y1="130" x2="60"  y2="60"  stroke="#F9312F" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
-            <line x1="170" y1="130" x2="40"  y2="130" stroke="#F9312F" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
-            <line x1="170" y1="130" x2="65"  y2="200" stroke="#F9312F" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
-            <!-- Right nodes -->
-            <line x1="170" y1="130" x2="280" y2="60"  stroke="#0A0A0A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.35"/>
-            <line x1="170" y1="130" x2="300" y2="130" stroke="#0A0A0A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.35"/>
-            <line x1="170" y1="130" x2="275" y2="200" stroke="#0A0A0A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.35"/>
-            <!-- Top centre -->
-            <line x1="170" y1="130" x2="170" y2="30"  stroke="#F9312F" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+            <!-- Connector lines -->
+            <line class="exec-line" x1="170" y1="118" x2="170" y2="44"  stroke="#F9312F" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.55"/>
+            <line class="exec-line" x1="170" y1="118" x2="58"  y2="86"  stroke="#F9312F" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.55"/>
+            <line class="exec-line" x1="170" y1="118" x2="40"  y2="175" stroke="#F9312F" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.55"/>
+            <line class="exec-line" x1="170" y1="118" x2="60"  y2="268" stroke="#F9312F" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.55"/>
+            <line class="exec-line" x1="170" y1="118" x2="282" y2="86"  stroke="#0A0A0A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.28"/>
+            <line class="exec-line" x1="170" y1="118" x2="300" y2="175" stroke="#0A0A0A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.28"/>
+            <line class="exec-line" x1="170" y1="118" x2="280" y2="268" stroke="#0A0A0A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.28"/>
 
-            <!-- Node circles — left -->
-            <circle cx="60"  cy="60"  r="22" fill="#FFF1F0" stroke="#F9312F" stroke-width="1.5"/>
-            <circle cx="40"  cy="130" r="22" fill="#FFF1F0" stroke="#F9312F" stroke-width="1.5"/>
-            <circle cx="65"  cy="200" r="22" fill="#FFF1F0" stroke="#F9312F" stroke-width="1.5"/>
-            <!-- Node circles — right -->
-            <circle cx="280" cy="60"  r="22" fill="#F5F5F3" stroke="#0A0A0A" stroke-width="1.5" opacity="0.7"/>
-            <circle cx="300" cy="130" r="22" fill="#F5F5F3" stroke="#0A0A0A" stroke-width="1.5" opacity="0.7"/>
-            <circle cx="275" cy="200" r="22" fill="#F5F5F3" stroke="#0A0A0A" stroke-width="1.5" opacity="0.7"/>
-            <!-- Top centre node -->
-            <circle cx="170" cy="30"  r="22" fill="#F9312F"/>
+            <!-- Node circles (only these pulse) -->
+            <circle class="exec-node" cx="58"  cy="86"  r="22" fill="#FFF1F0" stroke="#F6BEBC" stroke-width="1.5"/>
+            <circle class="exec-node" cx="40"  cy="175" r="22" fill="#FFF1F0" stroke="#F6BEBC" stroke-width="1.5"/>
+            <circle class="exec-node" cx="60"  cy="268" r="22" fill="#FFF1F0" stroke="#F6BEBC" stroke-width="1.5"/>
+            <circle class="exec-node" cx="282" cy="86"  r="22" fill="#F5F5F3" stroke="#DADAD6" stroke-width="1.5"/>
+            <circle class="exec-node" cx="300" cy="175" r="22" fill="#F5F5F3" stroke="#DADAD6" stroke-width="1.5"/>
+            <circle class="exec-node" cx="280" cy="268" r="22" fill="#F5F5F3" stroke="#DADAD6" stroke-width="1.5"/>
+            <circle class="exec-node exec-node--top" cx="170" cy="44" r="24" fill="#F9312F"/>
 
-            <!-- Icons inside nodes (simplified) -->
-            <!-- Top: shield check (quality) -->
-            <path d="M163 26l4 4 7-8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Left top: pencil-ruler (design) -->
-            <path d="M55 57l6-6 4 4-6 6z M59 61l2 2" stroke="#F9312F" stroke-width="1.5" stroke-linecap="round"/>
-            <!-- Left mid: factory/box (modular) -->
-            <rect x="35" y="125" width="10" height="9" rx="1" stroke="#F9312F" stroke-width="1.5"/>
-            <path d="M35 128h10" stroke="#F9312F" stroke-width="1.5"/>
-            <!-- Left bot: users (labour) -->
-            <circle cx="62" cy="196" r="3" stroke="#F9312F" stroke-width="1.5"/>
-            <path d="M57 204a5 5 0 0 1 10 0" stroke="#F9312F" stroke-width="1.5" stroke-linecap="round"/>
-            <!-- Right top: bar chart (tech) -->
-            <rect x="276" y="55" width="3" height="6" rx="1" fill="#0A0A0A" opacity="0.6"/>
-            <rect x="280" y="52" width="3" height="9" rx="1" fill="#0A0A0A" opacity="0.6"/>
-            <rect x="284" y="58" width="3" height="3" rx="1" fill="#0A0A0A" opacity="0.6"/>
-            <!-- Right mid: camera/cctv -->
-            <path d="M295 128h8v5h-8z M303 128l4-3v11l-4-3" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
-            <!-- Right bot: home (support) -->
-            <path d="M271 202l4-4 4 4v5h-3v-3h-2v3h-3z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+            <!-- Node icons — centred nested SVGs (stroke inherited by children) -->
+            <svg x="158" y="32"  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff"     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg x="46"  y="74"  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F9312F"  stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <svg x="28"  y="163" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F9312F"  stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            <svg x="48"  y="256" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F9312F"  stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <svg x="270" y="74"  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A4A48"  stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M6 10l3 3 5-5"/></svg>
+            <svg x="288" y="163" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A4A48"  stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <svg x="268" y="256" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A4A48"  stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </svg>
 
           <!-- Phone mockup -->
@@ -1006,12 +991,12 @@
               </div>
             </div>
           </div>
+        </div><!-- /exec-center-inner -->
 
-          <!-- Centre label -->
-          <div class="exec-center-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-            Single Accountability Hub
-          </div>
+        <!-- Centre label -->
+        <div class="exec-center-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          Single Accountability Hub
         </div>
       </div><!-- /exec-center -->
 
