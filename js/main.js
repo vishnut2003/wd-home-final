@@ -332,14 +332,14 @@
 
   /* ─────────────────────────────────────────────
      AUTO-PLAY
-     • Advances every 3.5 s
+     • Advances every 3 s
      • Wraps back to 0 after the last card
-     • Pauses on hover / touch / focus
+     • Keeps scrolling on hover; pauses only on touch / hidden tab
      • Progress bar fills over each interval
   ───────────────────────────────────────────── */
-  const AUTO_DELAY = 3500; // ms per slide
+  const AUTO_DELAY = 3000; // ms per slide
   let autoTimer   = null;
-  let paused      = false;
+  let touching    = false;  // active touch interaction
 
   /* Inject a thin progress bar under the nav counter */
   const progressBar = document.createElement('div');
@@ -368,9 +368,13 @@
     startFill();
   }
 
+  function isPaused() {
+    return touching || document.hidden;
+  }
+
   function startAutoPlay() {
-    if (paused) return;
     clearInterval(autoTimer);
+    if (isPaused()) return;            // never advance while paused
     autoTimer = setInterval(nextAuto, AUTO_DELAY);
     startFill();
   }
@@ -386,15 +390,13 @@
     startAutoPlay();
   }
 
-  /* Pause on hover */
-  const section = track.closest('.cj');
-  section.addEventListener('mouseenter', () => { paused = true;  stopAutoPlay(); });
-  section.addEventListener('mouseleave', () => { paused = false; startAutoPlay(); });
-
-  /* Pause on touch */
-  track.addEventListener('touchstart', () => { paused = true; stopAutoPlay(); }, { passive: true });
-  track.addEventListener('touchend',   () => {
-    paused = false;
+  /* ── Pause on touch (so a swipe isn't fighting the auto-advance) ── */
+  track.addEventListener('touchstart', () => {
+    touching = true;
+    stopAutoPlay();
+  }, { passive: true });
+  track.addEventListener('touchend', () => {
+    touching = false;
     setTimeout(startAutoPlay, 600); // brief delay after swipe
   }, { passive: true });
 
@@ -407,8 +409,8 @@
 
   /* Pause when tab is hidden, resume when visible */
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { stopAutoPlay(); }
-    else if (!paused)    { startAutoPlay(); }
+    if (document.hidden) stopAutoPlay();
+    else                 startAutoPlay(); // startAutoPlay self-guards via isPaused()
   });
 
   /* Init */
