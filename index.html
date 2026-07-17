@@ -75,7 +75,10 @@
      HERO
 ============================================ -->
 <section class="hero" id="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg" id="hero-bg">
+    <div class="hero-slide is-active" style="background-image:url('images/hero-slides/hero-slide-1.png')"></div>
+    <div class="hero-slide" style="background-image:url('images/hero-slides/hero-slide-2.png')"></div>
+  </div>
   <div class="container hero-inner">
     <div class="hero-left">
       <h1 class="hero-title">Building a home <em>shouldn't be stressful</em>.</h1>
@@ -1759,6 +1762,32 @@
   </div>
 </footer>
 
+<script>
+/* Hero background auto-slider — cycles slides every 3s. Content stays still. */
+(function () {
+  var slides = document.querySelectorAll('#hero-bg .hero-slide');
+  if (slides.length < 2) return;
+  var current = 0;
+  setInterval(function () {
+    var outgoing = slides[current];
+    current = (current + 1) % slides.length;
+    var incoming = slides[current];
+
+    // Place the incoming slide off-screen to the right without animating.
+    incoming.classList.remove('is-prev', 'is-active');
+    incoming.style.transition = 'none';
+    incoming.style.transform = 'translateX(100%)';
+    void incoming.offsetWidth; // force reflow so the reset takes effect
+
+    // Slide the incoming layer in from the right, the current one out to the left.
+    incoming.style.transition = '';
+    incoming.style.transform = '';
+    incoming.classList.add('is-active');
+    outgoing.classList.remove('is-active');
+    outgoing.classList.add('is-prev');
+  }, 3000);
+})();
+</script>
 <script src="js/main.js"></script>
 <script src="js/projects.js" defer></script>
 </body>

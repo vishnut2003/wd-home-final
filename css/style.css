@@ -338,17 +338,31 @@ em, i { font-style: normal; }
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: url('../images/hero-family.jpg') center 40% / cover no-repeat;
-  /* Zoom in slightly and shift the framing so the family sits further
-     left, clear of the form card on the right. */
-  transform: scale(1.18);
-  transform-origin: 74% 42%;
+  overflow: hidden;
 }
+/* Each background image is its own layer that slides horizontally.
+   The content (.hero-inner) and the gradient overlay stay still. */
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transform: translateX(100%);
+  transition: transform 1s cubic-bezier(.65, 0, .35, 1);
+  will-change: transform;
+}
+.hero-slide.is-active { transform: translateX(0); }
+.hero-slide.is-prev   { transform: translateX(-100%); }
 .hero-bg::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: linear-gradient(105deg, rgba(10,10,10,.90) 0%, rgba(10,10,10,.70) 38%, rgba(10,10,10,.28) 65%, rgba(10,10,10,.55) 100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide { transition: none; }
 }
 .hero-inner {
   position: relative;
