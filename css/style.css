@@ -1166,14 +1166,7 @@ em, i { font-style: normal; }
 .work-tile:hover .work-media { transform: scale(1.06); }
 
 /* ── Per-package colour palettes ── */
-/* 1 · Atmos Blue — clean, airy blue */
-.work-tile--blue .work-media,
-.pkg-photo--blue .pkg-media {
-  background:
-    radial-gradient(115% 100% at 14% 12%, rgba(255,255,255,.42), transparent 55%),
-    radial-gradient(120% 120% at 88% 96%, rgba(12,58,120,.92), transparent 60%),
-    linear-gradient(135deg, #5aa9f0 0%, #2f80d6 46%, #175aad 100%);
-}
+/* (The "Atmos Blue" tier and its --blue palette were removed on 2026-09-15.) */
 /* 2 · Atmos Blue Advance — deep, premium navy-indigo with a cool sheen */
 .work-tile--blue-premium .work-media,
 .pkg-photo--blue-premium .pkg-media {
@@ -1202,8 +1195,7 @@ em, i { font-style: normal; }
 }
 .work-tile:nth-child(1) { grid-column: span 2; grid-row: span 2; }
 .work-tile:nth-child(2) { grid-column: span 2; }
-.work-tile:nth-child(3),
-.work-tile:nth-child(4) { grid-column: span 1; }
+.work-tile:nth-child(3) { grid-column: span 2; }
 .work-overlay {
   position: absolute;
   inset: 0;
@@ -1559,7 +1551,7 @@ em, i { font-style: normal; }
    PACKAGES
 ============================================ */
 .packages { padding: 120px 0; background: var(--bg-alt); }
-.pkg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .pkg-card {
   background: #fff;
   border-radius: var(--r);
@@ -1607,6 +1599,11 @@ em, i { font-style: normal; }
 .pkg-price-unit { font-size: 13.5px; color: var(--ink-muted); }
 .pkg-build { font-size: 12px; color: var(--ink-muted); margin-top: 9px; line-height: 1.5; font-weight: 600; }
 .pkg-feats { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+/* 2026-09-18: package card details blurred at the client's request — the copy,
+   price, build breakdown and feature list stay in the markup, only their
+   rendering is softened. The tier photo and "Select Package" button are untouched.
+   Remove this rule to reveal them again. */
+.pkg-tag, .pkg-price, .pkg-build, .pkg-feats { filter: blur(6px); }
 .pkg-feat { display: flex; align-items: flex-start; gap: 11px; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
 .pkg-check {
   width: 19px;
@@ -2707,6 +2704,10 @@ em, i { font-style: normal; }
   .work-tile { grid-column: span 1 !important; grid-row: span 1 !important; aspect-ratio: 4/3; }
   .work-tile:nth-child(1) { grid-column: span 2 !important; aspect-ratio: 21/9; }
   .pkg-grid { grid-template-columns: repeat(2, 1fr); }
+  /* 3 cards in a 2-up grid: centre the odd last card at one column's width (same
+     pattern as .beyond-card:last-child). The ≤720px block resets this — required,
+     or the span collapses the single 1fr track. */
+  .pkg-card:last-child { grid-column: span 2; width: 100%; max-width: calc(50% - 9px); justify-self: center; }
   .tm-card { flex: 0 0 calc((100% - 20px) / 2); }
   .team-grid { grid-template-columns: repeat(2, 1fr); }
   .faq-grid { grid-template-columns: 1fr; }
@@ -2761,6 +2762,7 @@ em, i { font-style: normal; }
   .work-bento { grid-template-columns: 1fr; }
   .work-tile { grid-column: span 1 !important; aspect-ratio: 4/3 !important; }
   .pkg-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+  .pkg-card:last-child { grid-column: span 1; max-width: 100%; }
   .tm-card { flex: 0 0 100%; }
   .team-grid { grid-template-columns: 1fr; }
   /* exec-hub handled internally */
