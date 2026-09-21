@@ -3004,3 +3004,68 @@ em, i { font-style: normal; }
   .proj-auto-bar { display: none; }
   .proj-controls { margin-top: 28px; gap: 12px; }
 }
+
+/* ============================================
+   MOBILE CARD CAROUSELS (<=720px) — keep this block LAST in the file
+   .stats-bento, .struct-warranty-row, .team-grid, .beyond-grid, .bank-bento and
+   .diff-grid become one-card-per-view swipe carousels on phones only. Each is
+   wrapped in <div class="…-carousel" data-carousel data-carousel-mobile>, the grid
+   element carries data-carousel-track, and a .why-controls.why-controls--mobile
+   strip follows it; main.js ("WHY US CAROUSEL") wires it up behind the same 720px
+   query. Above 720px nothing here applies and the grids render as before. This
+   block has to out-cascade the <=720px grid rules above it, hence its position.
+============================================ */
+.why-controls--mobile { display: none; }
+
+@media (max-width: 720px) {
+  .why-controls--mobile { display: flex; }
+  [data-carousel-mobile] { position: relative; }
+
+  /* The grid element becomes the scroll-snap track (mirrors .tm-track). */
+  [data-carousel-mobile] [data-carousel-track] {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    max-width: none;          /* .bank-bento { max-width: 460px; margin: 0 auto } */
+    margin: -6px 0 0;         /* headroom for :hover translateY under overflow-y: hidden */
+    padding: 6px 0 0;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  [data-carousel-mobile] [data-carousel-track]::-webkit-scrollbar { display: none; }
+  [data-carousel-mobile] [data-carousel-track].is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
+  [data-carousel-mobile] [data-carousel-track].is-dragging > * { pointer-events: none; }
+
+  /* One card per view with 40px of the next card peeking (16px gap + 40px). A
+     fixed flex-basis beats the width:100% Elementor gives every container, and
+     flex items ignore grid-row/grid-column/justify-self, so .stat-tile.featured
+     and .beyond-card:last-child need no reset. */
+  [data-carousel-mobile] [data-carousel-track] > * {
+    flex: 0 0 calc(100% - 56px);
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Bottom margins that lived on the grid move to the wrapper, so the controls
+     strip sits directly under the track. */
+  .beyond-carousel { margin-bottom: 52px; }
+  .struct-warranty-carousel { margin-bottom: 24px; }
+
+  /* The vertical reveal does not suit a horizontal scroller: off-screen cards
+     would only fade in as they are swiped into view, and the 22px translate is
+     clipped by overflow-y: hidden. Show these cards outright. */
+  [data-carousel-mobile] [data-animate] { opacity: 1; transform: none; }
+}

@@ -39,7 +39,15 @@
     const cards = Array.from(track.children);
     if (!cards.length) return;
 
+    // Mobile-only carousels (data-carousel-mobile): above 720px the track is a
+    // plain CSS grid and must stay untouched — no dots, no drag handlers, no
+    // scrollTo. Wiring is attached the first time the phone query matches.
+    const mobileOnly = carousel.hasAttribute('data-carousel-mobile');
+    const phoneQuery = window.matchMedia('(max-width: 720px)');
+    const isActive = () => !mobileOnly || phoneQuery.matches;
+
     const getCardsPerView = () => {
+      if (mobileOnly) return 1;
       const w = window.innerWidth;
       if (w >= 1101) return 3;
       if (w >= 721) return 2;
@@ -84,79 +92,100 @@
       nextBtn.disabled = current >= last;
     }
 
-    prevBtn.addEventListener('click', () => goTo(getCurrentPage() - 1));
-    nextBtn.addEventListener('click', () => goTo(getCurrentPage() + 1));
+    function init() {
+      prevBtn.addEventListener('click', () => goTo(getCurrentPage() - 1));
+      nextBtn.addEventListener('click', () => goTo(getCurrentPage() + 1));
 
-    let ticking = false;
-    track.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(() => { update(); ticking = false; });
-        ticking = true;
-      }
-    }, { passive: true });
+      let ticking = false;
+      track.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => { update(); ticking = false; });
+          ticking = true;
+        }
+      }, { passive: true });
 
-    // Drag to scroll
-    let isDown = false;
-    let startX = 0;
-    let startScroll = 0;
-    let moved = 0;
-    const DRAG_THRESHOLD = 6;
+      // Drag to scroll
+      let isDown = false;
+      let startX = 0;
+      let startScroll = 0;
+      let moved = 0;
+      const DRAG_THRESHOLD = 6;
 
-    track.addEventListener('mousedown', (e) => {
-      isDown = true;
-      moved = 0;
-      startX = e.pageX;
-      startScroll = track.scrollLeft;
-      track.classList.add('is-dragging');
-    });
-    track.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
-      const dx = e.pageX - startX;
-      moved = Math.abs(dx);
-      track.scrollLeft = startScroll - dx;
-      e.preventDefault();
-    });
-    const endDrag = () => {
-      if (!isDown) return;
-      isDown = false;
-      track.classList.remove('is-dragging');
-      if (moved < DRAG_THRESHOLD) return;
-      const pageW = getPageWidth();
-      const target = Math.round(track.scrollLeft / pageW);
-      track.scrollTo({ left: target * pageW, behavior: 'smooth' });
-    };
-    track.addEventListener('mouseup', endDrag);
-    track.addEventListener('mouseleave', endDrag);
-    track.addEventListener('click', (e) => {
-      if (moved >= DRAG_THRESHOLD) { e.preventDefault(); e.stopPropagation(); }
-    }, true);
-    track.addEventListener('dragstart', (e) => e.preventDefault());
+      track.addEventListener('mousedown', (e) => {
+        // A desktop grid (after a resize across 720px) must keep native text
+        // selection and link clicks.
+        if (!isActive()) return;
+        isDown = true;
+        moved = 0;
+        startX = e.pageX;
+        startScroll = track.scrollLeft;
+        track.classList.add('is-dragging');
+      });
+      track.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        const dx = e.pageX - startX;
+        moved = Math.abs(dx);
+        track.scrollLeft = startScroll - dx;
+        e.preventDefault();
+      });
+      const endDrag = () => {
+        if (!isDown) return;
+        isDown = false;
+        track.classList.remove('is-dragging');
+        if (moved < DRAG_THRESHOLD) return;
+        const pageW = getPageWidth();
+        const target = Math.round(track.scrollLeft / pageW);
+        track.scrollTo({ left: target * pageW, behavior: 'smooth' });
+      };
+      track.addEventListener('mouseup', endDrag);
+      track.addEventListener('mouseleave', endDrag);
+      track.addEventListener('click', (e) => {
+        if (moved >= DRAG_THRESHOLD) { e.preventDefault(); e.stopPropagation(); }
+      }, true);
+      track.addEventListener('dragstart', (e) => e.preventDefault());
 
-    // Touch support
-    let touchStartX = 0;
-    let touchStartScroll = 0;
-    track.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartScroll = track.scrollLeft;
-    }, { passive: true });
-    track.addEventListener('touchend', () => {
-      const pageW = getPageWidth();
-      const target = Math.round(track.scrollLeft / pageW);
-      track.scrollTo({ left: target * pageW, behavior: 'smooth' });
-    }, { passive: true });
+      // Touch support
+      let touchStartX = 0;
+      let touchStartScroll = 0;
+      track.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartScroll = track.scrollLeft;
+      }, { passive: true });
+      track.addEventListener('touchend', () => {
+        const pageW = getPageWidth();
+        const target = Math.round(track.scrollLeft / pageW);
+        track.scrollTo({ left: target * pageW, behavior: 'smooth' });
+      }, { passive: true });
 
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        buildDots();
-        goTo(0);
-        update();
-      }, 150);
-    });
+      let resizeTimer;
+      let lastWidth = window.innerWidth;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          // Phone browsers fire resize when the URL bar shows/hides (height only);
+          // rebuilding then would yank the carousel back to slide 1 mid-scroll.
+          if (window.innerWidth === lastWidth) return;
+          lastWidth = window.innerWidth;
+          buildDots();
+          goTo(0);
+          update();
+        }, 150);
+      });
 
-    buildDots();
-    update();
+      buildDots();
+      update();
+    }
+
+    if (isActive()) {
+      init();
+    } else {
+      const onChange = (e) => {
+        if (!e.matches) return;
+        phoneQuery.removeEventListener('change', onChange);
+        init();
+      };
+      phoneQuery.addEventListener('change', onChange);
+    }
   });
 })();
 
