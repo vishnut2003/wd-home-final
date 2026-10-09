@@ -237,9 +237,10 @@
 // Infinite 1-card-step carousel for #packages. Three clones of each end are
 // prepended/appended so any page the user can see also exists one step past the
 // real cards; when a transition lands on a clone page the track is jumped
-// (transition: none) onto the identical real page. Autoplay 10 s, held while the
-// pointer is down or hovering, only while on screen, off under
-// prefers-reduced-motion and on a hidden tab. Card widths come from CSS; the step
+// (transition: none) onto the identical real page. Autoplay 10 s, only while on
+// screen, off under prefers-reduced-motion and on a hidden tab; it keeps running
+// under a hovering pointer and stops for good at the first click/tap/drag on the
+// carousel (client request 2026-10-09). Card widths come from CSS; the step
 // (card width + gap) is measured and re-measured on width-only resizes.
 (function () {
   const root = document.querySelector('[data-pkg-carousel]');
@@ -354,7 +355,6 @@
   let dx = 0;
   viewport.addEventListener('pointerdown', (e) => {
     if (e.button !== 0) return;
-    hold();
     if (busy) return;
     dragging = true;
     pointerId = e.pointerId;
@@ -377,8 +377,8 @@
     if (Math.abs(dx) > CLICK_CANCEL_PX) track.classList.add('is-dragging');
     track.style.transform = `translate3d(${-pos * step + dx}px, 0, 0)`;
   });
-  window.addEventListener('pointerup', (e) => { endDrag(e, false); release(); });
-  window.addEventListener('pointercancel', (e) => { endDrag(e, true); release(); });
+  window.addEventListener('pointerup', (e) => endDrag(e, false));
+  window.addEventListener('pointercancel', (e) => endDrag(e, true));
   track.addEventListener('click', (e) => {
     if (Math.abs(dx) > CLICK_CANCEL_PX) { e.preventDefault(); e.stopPropagation(); }
   }, true);
@@ -387,26 +387,22 @@
   /* ---- autoplay ---- */
   let timer = 0;
   let inView = false;
-  let held = false;
-  let hovered = false;
-  const canPlay = () => inView && !held && !hovered && !document.hidden && !reduceMotion.matches;
+  let stopped = false;                                        // first user interaction ends autoplay
+  const canPlay = () => inView && !stopped && !document.hidden && !reduceMotion.matches;
   function stop() { clearTimeout(timer); timer = 0; }
   function start() {                                          // (re)starts the 10 s count
     stop();
     if (!canPlay()) return;
     timer = setTimeout(() => { next(); start(); }, AUTOPLAY_MS);
   }
-  function hold() { held = true; stop(); }
-  function release() { if (!held) return; held = false; start(); }
 
   new IntersectionObserver((entries) => {
     inView = entries[0].isIntersecting;
     start();
   }, { threshold: 0.5 }).observe(viewport);
-  if (window.matchMedia('(hover: hover)').matches) {         // touch taps must not "hover" forever
-    root.addEventListener('mouseenter', () => { hovered = true; stop(); });
-    root.addEventListener('mouseleave', () => { hovered = false; start(); });
-  }
+  // Any click, tap or drag on the carousel (cards, arrows, dots) stops autoplay until
+  // the page is reloaded. Hovering does not.
+  root.addEventListener('pointerdown', () => { stopped = true; stop(); }, true);
   document.addEventListener('visibilitychange', start);
   reduceMotion.addEventListener('change', start);
 
