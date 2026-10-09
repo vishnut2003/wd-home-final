@@ -174,6 +174,48 @@
 
       buildDots();
       update();
+
+      if (mobileOnly) initAutoplay();
+    }
+
+    // Autoplay for the mobile carousels: one card every 2s, wrapping from the
+    // last card back to the first. It only runs while the carousel is on screen
+    // at phone width, holds while a finger or mouse is down on the track, and
+    // restarts its 2s count after any swipe, arrow or dot tap.
+    function initAutoplay() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const AUTOPLAY_MS = 2000;
+      let timer = null;
+      let inView = false;
+      let held = false;
+
+      const stop = () => { clearInterval(timer); timer = null; };
+      const start = () => {
+        stop();
+        if (!inView || held || !isActive() || document.hidden) return;
+        timer = setInterval(() => {
+          const next = getCurrentPage() + 1;
+          goTo(next > getPageCount() - 1 ? 0 : next);
+        }, AUTOPLAY_MS);
+      };
+      const hold = () => { held = true; stop(); };
+      const release = () => { held = false; start(); };
+
+      new IntersectionObserver((entries) => {
+        inView = entries[0].isIntersecting;
+        start();
+      }, { threshold: 0.5 }).observe(track);
+
+      track.addEventListener('touchstart', hold, { passive: true });
+      track.addEventListener('touchend', release, { passive: true });
+      track.addEventListener('touchcancel', release, { passive: true });
+      track.addEventListener('mousedown', hold);
+      track.addEventListener('mouseup', release);
+      track.addEventListener('mouseleave', () => { if (held) release(); });
+      [prevBtn, nextBtn, dotsContainer].forEach((el) => el.addEventListener('click', start));
+      document.addEventListener('visibilitychange', start);
+      phoneQuery.addEventListener('change', start);
     }
 
     if (isActive()) {
@@ -187,6 +229,204 @@
       phoneQuery.addEventListener('change', onChange);
     }
   });
+})();
+
+/* ============================================
+   PACKAGES CAROUSEL
+============================================ */
+// Infinite 1-card-step carousel for #packages. Three clones of each end are
+// prepended/appended so any page the user can see also exists one step past the
+// real cards; when a transition lands on a clone page the track is jumped
+// (transition: none) onto the identical real page. Autoplay 10 s, held while the
+// pointer is down or hovering, only while on screen, off under
+// prefers-reduced-motion and on a hidden tab. Card widths come from CSS; the step
+// (card width + gap) is measured and re-measured on width-only resizes.
+(function () {
+  const root = document.querySelector('[data-pkg-carousel]');
+  if (!root) return;
+  const viewport = root.querySelector('[data-pkg-viewport]');
+  const track = root.querySelector('[data-pkg-track]');
+  const prevBtn = root.querySelector('[data-pkg-prev]');
+  const nextBtn = root.querySelector('[data-pkg-next]');
+  const dotsEl = root.querySelector('[data-pkg-dots]');
+  if (!viewport || !track || !prevBtn || !nextBtn || !dotsEl) return;
+
+  const cards = Array.from(track.children);
+  const N = cards.length;
+  if (N < 2) return;
+
+  const CLONES = 3;            // = max cards per view: one full page each side
+  const AUTOPLAY_MS = 10000;
+  const SWIPE_PX = 40;
+  const CLICK_CANCEL_PX = 8;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ---- clones ---- */
+  const makeClone = (i) => {
+    const c = cards[i].cloneNode(true);
+    c.classList.add('pkg-clone');
+    c.removeAttribute('data-animate');
+    c.setAttribute('aria-hidden', 'true');
+    c.dataset.pkgClone = String(i);
+    c.querySelectorAll('a, button').forEach((el) => { el.tabIndex = -1; });
+    return c;
+  };
+  const head = [];
+  const tail = [];
+  for (let k = 0; k < CLONES; k++) {
+    tail.push(makeClone(k % N));
+    head.unshift(makeClone(((N - 1 - k) % N + N) % N));
+  }
+  track.prepend(...head);
+  track.append(...tail);
+  const slots = Array.from(track.children);   // CLONES + N + CLONES
+
+  /* ---- geometry ---- */
+  let pos = CLONES;                            // slot index of the left-most visible card
+  let step = 0;
+  const measure = () => {
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    step = slots[0].getBoundingClientRect().width + gap;
+  };
+  const realIndex = (p) => (((p - CLONES) % N) + N) % N;
+  const render = (animate) => {
+    if (!animate) track.style.transition = 'none';
+    track.style.transform = `translate3d(${-pos * step}px, 0, 0)`;
+    if (!animate) { void track.offsetWidth; track.style.transition = ''; }
+  };
+
+  /* ---- dots ---- */
+  const dots = [];
+  const buildDots = () => {
+    dotsEl.replaceChildren();
+    dots.length = 0;
+    for (let i = 0; i < N; i++) {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'why-dot';
+      d.setAttribute('aria-label', `Go to package ${i + 1}`);
+      d.addEventListener('click', () => { goTo(i); start(); });
+      dotsEl.appendChild(d);
+      dots.push(d);
+    }
+  };
+  const updateDots = () => {
+    const cur = realIndex(pos);
+    dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+  };
+
+  /* ---- movement + seamless wrap ---- */
+  let busy = false;
+  let settleTimer = 0;
+  const settle = () => {
+    if (!busy) return;
+    busy = false;
+    clearTimeout(settleTimer);
+    if (pos >= CLONES + N) { pos -= N; render(false); }      // clone page -> same pixels, real cards
+    else if (pos < CLONES) { pos += N; render(false); }
+  };
+  track.addEventListener('transitionend', (e) => {
+    if (e.target === track && e.propertyName === 'transform') settle();
+  });
+  const moveBy = (delta) => {
+    if (busy || !delta) return;
+    const target = pos + delta;
+    if (target < 0 || target >= slots.length) return;
+    busy = true;
+    pos = target;
+    render(true);
+    updateDots();
+    const dur = parseFloat(getComputedStyle(track).transitionDuration) || 0;
+    if (!dur) { settle(); return; }                           // reduced motion: no transitionend
+    settleTimer = setTimeout(settle, dur * 1000 + 100);       // safety if transitionend is lost
+  };
+  const next = () => moveBy(1);
+  const prev = () => moveBy(-1);
+  const goTo = (i) => moveBy(CLONES + i - pos);
+
+  prevBtn.addEventListener('click', () => { prev(); start(); });
+  nextBtn.addEventListener('click', () => { next(); start(); });
+
+  /* ---- swipe / drag (pointer events; click is cancelled only after a real drag) ---- */
+  let dragging = false;
+  let pointerId = null;
+  let startX = 0;
+  let dx = 0;
+  viewport.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    hold();
+    if (busy) return;
+    dragging = true;
+    pointerId = e.pointerId;
+    startX = e.clientX;
+    dx = 0;
+  });
+  const endDrag = (e, cancelled) => {
+    if (!dragging || e.pointerId !== pointerId) return;
+    dragging = false;
+    track.classList.remove('is-dragging');
+    const dir = !cancelled && Math.abs(dx) >= SWIPE_PX ? (dx < 0 ? 1 : -1) : 0;
+    if (dir) moveBy(dir); else render(true);                  // snap back
+    setTimeout(() => { dx = 0; }, 0);                         // after the click has been judged
+  };
+  window.addEventListener('pointermove', (e) => {
+    if (!dragging || e.pointerId !== pointerId) return;
+    dx = e.clientX - startX;
+    // Only a real drag disables the cards' pointer events; adding the class on
+    // pointerdown would make every plain click land on the track instead of the link.
+    if (Math.abs(dx) > CLICK_CANCEL_PX) track.classList.add('is-dragging');
+    track.style.transform = `translate3d(${-pos * step + dx}px, 0, 0)`;
+  });
+  window.addEventListener('pointerup', (e) => { endDrag(e, false); release(); });
+  window.addEventListener('pointercancel', (e) => { endDrag(e, true); release(); });
+  track.addEventListener('click', (e) => {
+    if (Math.abs(dx) > CLICK_CANCEL_PX) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+  track.addEventListener('dragstart', (e) => e.preventDefault());
+
+  /* ---- autoplay ---- */
+  let timer = 0;
+  let inView = false;
+  let held = false;
+  let hovered = false;
+  const canPlay = () => inView && !held && !hovered && !document.hidden && !reduceMotion.matches;
+  function stop() { clearTimeout(timer); timer = 0; }
+  function start() {                                          // (re)starts the 10 s count
+    stop();
+    if (!canPlay()) return;
+    timer = setTimeout(() => { next(); start(); }, AUTOPLAY_MS);
+  }
+  function hold() { held = true; stop(); }
+  function release() { if (!held) return; held = false; start(); }
+
+  new IntersectionObserver((entries) => {
+    inView = entries[0].isIntersecting;
+    start();
+  }, { threshold: 0.5 }).observe(viewport);
+  if (window.matchMedia('(hover: hover)').matches) {         // touch taps must not "hover" forever
+    root.addEventListener('mouseenter', () => { hovered = true; stop(); });
+    root.addEventListener('mouseleave', () => { hovered = false; start(); });
+  }
+  document.addEventListener('visibilitychange', start);
+  reduceMotion.addEventListener('change', start);
+
+  /* ---- width-only resize (phone URL bar fires height-only resizes) ---- */
+  let lastW = window.innerWidth;
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (window.innerWidth === lastW) return;
+      lastW = window.innerWidth;
+      measure();
+      render(false);
+    }, 120);
+  });
+
+  buildDots();
+  measure();
+  render(false);
+  updateDots();
 })();
 
 /* ============================================

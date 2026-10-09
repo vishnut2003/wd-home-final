@@ -1166,7 +1166,14 @@ em, i { font-style: normal; }
 .work-tile:hover .work-media { transform: scale(1.06); }
 
 /* ── Per-package colour palettes ── */
-/* (The "Atmos Blue" tier and its --blue palette were removed on 2026-09-15.) */
+/* 1 · Atmos Blue — clean, airy blue (removed 2026-09-15, restored 2026-10-09) */
+.work-tile--blue .work-media,
+.pkg-photo--blue .pkg-media {
+  background:
+    radial-gradient(115% 100% at 14% 12%, rgba(255,255,255,.42), transparent 55%),
+    radial-gradient(120% 120% at 88% 96%, rgba(12,58,120,.92), transparent 60%),
+    linear-gradient(135deg, #5aa9f0 0%, #2f80d6 46%, #175aad 100%);
+}
 /* 2 · Atmos Blue Advance — deep, premium navy-indigo with a cool sheen */
 .work-tile--blue-premium .work-media,
 .pkg-photo--blue-premium .pkg-media {
@@ -1551,7 +1558,43 @@ em, i { font-style: normal; }
    PACKAGES
 ============================================ */
 .packages { padding: 120px 0; background: var(--bg-alt); }
-.pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+/* 2026-10-09: the packages row is a transform carousel (main.js "PACKAGES CAROUSEL").
+   .pkg-viewport clips, .pkg-track is translated by JS, 3 / 2 / 1 cards per view on the
+   .why-card breakpoints. The 6px head room and 60px foot room keep the card's hover lift
+   and shadow visible under overflow:hidden. flex-direction / flex-wrap / min-width are
+   explicit because Elementor's .e-con defaults would otherwise stack or shrink the cards. */
+.pkg-carousel { position: relative; }
+.pkg-viewport {
+  overflow: hidden;
+  margin: -6px 0 -60px;
+  padding: 6px 0 60px;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.pkg-track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 18px;
+  will-change: transform;
+  transition: transform .55s cubic-bezier(.22, .61, .36, 1);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pkg-track.is-dragging { transition: none; cursor: grabbing; }
+.pkg-track.is-dragging .pkg-card { pointer-events: none; }
+.pkg-track > .pkg-card {
+  flex: 0 0 calc((100% - 36px) / 3);
+  min-width: 0;
+  /* .pkg-card transitions "all": inside the track that would animate the card WIDTH
+     on a resize, and the JS would measure a mid-animation width for its step. */
+  transition-property: transform, box-shadow, border-color;
+}
+/* The viewport's 60px shadow room overlaps the strip; under Elementor the viewport
+   container is positioned and would paint over the arrows, so lift the strip. */
+.pkg-controls { margin-top: 40px; position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .pkg-track { transition: none; } }
 .pkg-card {
   background: #fff;
   border-radius: var(--r);
@@ -1602,8 +1645,9 @@ em, i { font-style: normal; }
 /* 2026-09-18: package card details blurred at the client's request — the copy,
    price, build breakdown and feature list stay in the markup, only their
    rendering is softened. The tier photo and "Select Package" button are untouched.
-   Remove this rule to reveal them again. */
-.pkg-tag, .pkg-price, .pkg-build, .pkg-feats { filter: blur(6px); }
+   Remove this rule to reveal them again. (Briefly removed and restored 2026-09-28.)
+   2026-09-30: the headline price (.pkg-price) is shown in the clear; the rest stays blurred. */
+.pkg-tag, .pkg-build, .pkg-feats { filter: blur(6px); }
 .pkg-feat { display: flex; align-items: flex-start; gap: 11px; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
 .pkg-check {
   width: 19px;
@@ -2703,11 +2747,7 @@ em, i { font-style: normal; }
   .work-bento { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
   .work-tile { grid-column: span 1 !important; grid-row: span 1 !important; aspect-ratio: 4/3; }
   .work-tile:nth-child(1) { grid-column: span 2 !important; aspect-ratio: 21/9; }
-  .pkg-grid { grid-template-columns: repeat(2, 1fr); }
-  /* 3 cards in a 2-up grid: centre the odd last card at one column's width (same
-     pattern as .beyond-card:last-child). The ≤720px block resets this — required,
-     or the span collapses the single 1fr track. */
-  .pkg-card:last-child { grid-column: span 2; width: 100%; max-width: calc(50% - 9px); justify-self: center; }
+  .pkg-track > .pkg-card { flex-basis: calc((100% - 18px) / 2); }
   .tm-card { flex: 0 0 calc((100% - 20px) / 2); }
   .team-grid { grid-template-columns: repeat(2, 1fr); }
   .faq-grid { grid-template-columns: 1fr; }
@@ -2761,8 +2801,8 @@ em, i { font-style: normal; }
   .why-card { flex: 0 0 100%; }
   .work-bento { grid-template-columns: 1fr; }
   .work-tile { grid-column: span 1 !important; aspect-ratio: 4/3 !important; }
-  .pkg-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
-  .pkg-card:last-child { grid-column: span 1; max-width: 100%; }
+  .pkg-viewport { max-width: 480px; margin-left: auto; margin-right: auto; }
+  .pkg-track > .pkg-card { flex-basis: 100%; }
   .tm-card { flex: 0 0 100%; }
   .team-grid { grid-template-columns: 1fr; }
   /* exec-hub handled internally */
