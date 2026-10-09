@@ -1642,12 +1642,9 @@ em, i { font-style: normal; }
 .pkg-price-unit { font-size: 13.5px; color: var(--ink-muted); }
 .pkg-build { font-size: 12px; color: var(--ink-muted); margin-top: 9px; line-height: 1.5; font-weight: 600; }
 .pkg-feats { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-/* 2026-09-18: package card details blurred at the client's request — the copy,
-   price, build breakdown and feature list stay in the markup, only their
-   rendering is softened. The tier photo and "Select Package" button are untouched.
-   Remove this rule to reveal them again. (Briefly removed and restored 2026-09-28.)
-   2026-09-30: the headline price (.pkg-price) is shown in the clear; the rest stays blurred. */
-.pkg-tag, .pkg-build, .pkg-feats { filter: blur(6px); }
+/* 2026-09-18 → 2026-10-09: the package card details were blurred (filter: blur(6px) on
+   .pkg-tag, .pkg-build, .pkg-feats) at the client's request; the blur was removed on
+   2026-10-09, also at the client's request. Re-add that rule here to blur them again. */
 .pkg-feat { display: flex; align-items: flex-start; gap: 11px; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
 .pkg-check {
   width: 19px;
