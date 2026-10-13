@@ -1728,6 +1728,10 @@ em, i { font-style: normal; }
 .btn-light { background: #fff; color: var(--ink); }
 .btn-light:hover { background: rgba(255, 255, 255, .88); transform: translateY(-2px); }
 .pkg-card .btn { width: 100%; justify-content: center; margin-top: 20px; border-radius: 999px; padding: 14px 24px; }
+/* 2026-10-13: "View all packages" button under the section intro -> /all-packages/ (the
+   catalogue landing page). Inline-flex, so .section-head.center centres it. */
+.pkg-all-btn { margin-top: 26px; }
+
 .pkg-foot {
   margin-top: 30px;
   text-align: center;
