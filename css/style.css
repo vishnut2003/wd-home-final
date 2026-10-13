@@ -1144,7 +1144,9 @@ em, i { font-style: normal; }
 /* ═══════════════════════════════════════════════
    Gradient "thumbnail" media layer (replaces photos)
    Shared by the aesthetics bento (.work-media) and
-   the pricing cards (.pkg-media).
+   the pricing cards (.pkg-media). 2026-10-13: the package cards now put a cover
+   PHOTO on .pkg-media (see the PACKAGES block); the per-tier gradients below
+   serve the (hidden) aesthetics bento only.
 ═══════════════════════════════════════════════ */
 .work-media,
 .pkg-media {
@@ -1167,16 +1169,14 @@ em, i { font-style: normal; }
 
 /* ── Per-package colour palettes ── */
 /* 1 · Atmos Blue — clean, airy blue (removed 2026-09-15, restored 2026-10-09) */
-.work-tile--blue .work-media,
-.pkg-photo--blue .pkg-media {
+.work-tile--blue .work-media {
   background:
     radial-gradient(115% 100% at 14% 12%, rgba(255,255,255,.42), transparent 55%),
     radial-gradient(120% 120% at 88% 96%, rgba(12,58,120,.92), transparent 60%),
     linear-gradient(135deg, #5aa9f0 0%, #2f80d6 46%, #175aad 100%);
 }
 /* 2 · Atmos Blue Advance — deep, premium navy-indigo with a cool sheen */
-.work-tile--blue-premium .work-media,
-.pkg-photo--blue-premium .pkg-media {
+.work-tile--blue-premium .work-media {
   background:
     radial-gradient(100% 90% at 22% 10%, rgba(96,198,255,.5), transparent 55%),
     linear-gradient(115deg, transparent 38%, rgba(255,255,255,.14) 50%, transparent 62%),
@@ -1184,16 +1184,14 @@ em, i { font-style: normal; }
     linear-gradient(135deg, #23409c 0%, #142a72 42%, #0a1740 100%);
 }
 /* 3 · Avenue Beige — warm, soft-luxury sand */
-.work-tile--beige .work-media,
-.pkg-photo--beige .pkg-media {
+.work-tile--beige .work-media {
   background:
     radial-gradient(115% 100% at 16% 12%, rgba(255,252,244,.72), transparent 55%),
     radial-gradient(110% 110% at 90% 94%, rgba(150,118,80,.6), transparent 60%),
     linear-gradient(135deg, #efe0c8 0%, #dcc4a2 46%, #c1a37e 100%);
 }
 /* 4 · Ambience Black — bold, dramatic charcoal-black */
-.work-tile--black .work-media,
-.pkg-photo--black .pkg-media {
+.work-tile--black .work-media {
   background:
     radial-gradient(120% 100% at 20% 14%, rgba(120,126,142,.5), transparent 52%),
     linear-gradient(120deg, transparent 40%, rgba(255,255,255,.08) 50%, transparent 60%),
@@ -1595,70 +1593,141 @@ em, i { font-style: normal; }
    container is positioned and would paint over the arrows, so lift the strip. */
 .pkg-controls { margin-top: 40px; position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) { .pkg-track { transition: none; } }
+/* 2026-10-13: each card is a dark cover banner (the look of the catalogue app's
+   landing banners, wd-packages-template/public/static/css/web.css .pkg*): a cover
+   photo on .pkg-media under a two-axis scrim, an inset hairline, the tier name with
+   its last word in the tier accent, the tagline, a dark glass panel holding the rate
+   and the 01…05 feature list, and one white pill button. Card copy is unchanged.
+   Per-tier tokens live on .pkg-card--X; under Elementor every one of these divs is
+   an .e-con container, so the layers rely on the builder's position/display reset. */
+.pkg-card--blue         { --pk-accent: #8fb8ff; --pk-dark: #0b1f3f; }
+.pkg-card--blue-premium { --pk-accent: #9cc2ff; --pk-dark: #0a1740; }
+.pkg-card--beige        { --pk-accent: #e6d2b0; --pk-dark: #342a22; }
+.pkg-card--black        { --pk-accent: #e8433f; --pk-dark: #0e0e0e; }
+.pkg-card--blue .pkg-media         { background-image: url("../images/packages/cover-atmos-blue-basic.jpg"); }
+.pkg-card--blue-premium .pkg-media { background-image: url("../images/packages/cover-atmos-blue-advance.jpg"); }
+.pkg-card--beige .pkg-media        { background-image: url("../images/packages/cover-avenue-beige.jpg"); }
+.pkg-card--black .pkg-media        { background-image: url("../images/packages/cover-ambience-black.jpg"); }
 .pkg-card {
-  background: #fff;
-  border-radius: var(--r);
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
+  border-radius: var(--r);
+  background: var(--pk-dark, #0e0e0e);
+  color: #fff;
   display: flex;
   flex-direction: column;
-  transition: all .35s ease;
-  border: 1px solid transparent;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .18);
+  transition: transform .35s ease, box-shadow .35s ease;
 }
-.pkg-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
-.pkg-photo { aspect-ratio: 16/9; position: relative; overflow: hidden; background: #eee; }
+.pkg-card:hover { transform: translateY(-6px); box-shadow: 0 30px 80px rgba(0, 0, 0, .28); }
+/* Inset hairline, as on the catalogue banner */
+.pkg-card::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: calc(var(--r) - 8px);
+  pointer-events: none;
+  z-index: 2;
+}
+/* Photo layer fills the card; .pkg-media (shared rule above) carries the cover + grain */
+.pkg-photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--pk-dark, #0e0e0e);
+}
+.pkg-media { background-size: cover; background-position: 50% 40%; transition: transform 1.2s cubic-bezier(.2, .8, .2, 1); }
 .pkg-card:hover .pkg-media { transform: scale(1.06); }
+/* Two-axis scrim: darker at the foot (under the panel) and along the left edge */
 .pkg-photo::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 50%, rgba(10,10,10,.5) 100%);
+  background:
+    linear-gradient(to top, rgba(6, 6, 8, .62) 0%, rgba(6, 6, 8, .38) 40%, rgba(6, 6, 8, .18) 100%),
+    linear-gradient(to right, rgba(6, 6, 8, .35) 0%, rgba(6, 6, 8, 0) 70%);
+}
+.pkg-body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 26px 26px;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, .6);
 }
 .pkg-photo-tier {
-  position: absolute;
-  bottom: 14px;
-  left: 18px;
-  z-index: 1;
+  display: block;
   font-weight: 800;
-  font-size: 22px;
+  font-size: 28px;
+  line-height: 1.08;
+  letter-spacing: -.02em;
   color: #fff;
-  letter-spacing: -.01em;
+  text-wrap: balance;
 }
-.pkg-body { padding: 26px; display: flex; flex-direction: column; flex: 1; }
-.pkg-tag { font-size: 13px; color: var(--ink-muted); line-height: 1.55; }
+.pkg-tier-accent { font-weight: inherit; color: var(--pk-accent, #8fb8ff); }
+.pkg-photo-tier .wad-title-link:hover,
+.pkg-photo-tier .wad-title-link:focus-visible { color: var(--pk-accent, #8fb8ff); }
+.pkg-tag { margin-top: 10px; font-size: 13.5px; line-height: 1.55; color: rgba(255, 255, 255, .82); }
+/* Glass panel: rate on top, rule, then the numbered list */
+.pkg-panel {
+  margin-top: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(8, 8, 10, .62) 0%, rgba(8, 8, 10, .74) 100%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .25);
+}
 .pkg-price {
-  margin-top: 18px;
   display: flex;
   align-items: baseline;
   gap: 7px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, .24);
 }
 .pkg-price-amt {
   font-weight: 800;
-  font-size: 30px;
-  color: var(--ink);
+  font-size: 28px;
+  color: #fff;
   letter-spacing: -.01em;
 }
-.pkg-price-unit { font-size: 13.5px; color: var(--ink-muted); }
-.pkg-build { font-size: 12px; color: var(--ink-muted); margin-top: 9px; line-height: 1.5; font-weight: 600; }
-.pkg-feats { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.pkg-price-unit { font-size: 13px; color: rgba(255, 255, 255, .8); }
+.pkg-build { font-size: 12px; color: rgba(255, 255, 255, .7); margin-top: 9px; line-height: 1.5; font-weight: 600; }
+.pkg-feats { margin: 16px 0 0; flex: 1; display: flex; flex-direction: column; gap: 11px; counter-reset: pkg; }
 /* 2026-09-18 → 2026-10-09: the package card details were blurred (filter: blur(6px) on
    .pkg-tag, .pkg-build, .pkg-feats) at the client's request; the blur was removed on
    2026-10-09, also at the client's request. Re-add that rule here to blur them again. */
-.pkg-feat { display: flex; align-items: flex-start; gap: 11px; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
-.pkg-check {
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  background: var(--red-tint);
-  color: var(--red);
+.pkg-feat {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: #fff;
+  counter-increment: pkg;
 }
-.pkg-card .btn { width: 100%; justify-content: center; margin-top: auto; }
+/* The tick icon stays in the markup; it is hidden and the span prints 01…05 instead */
+.pkg-check {
+  flex-shrink: 0;
+  min-width: 20px;
+  margin-top: 1px;
+  color: var(--pk-accent, #8fb8ff);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  font-variant-numeric: tabular-nums;
+}
+.pkg-check svg { display: none; }
+.pkg-check::before { content: counter(pkg, decimal-leading-zero); }
+.btn-light { background: #fff; color: var(--ink); }
+.btn-light:hover { background: rgba(255, 255, 255, .88); transform: translateY(-2px); }
+.pkg-card .btn { width: 100%; justify-content: center; margin-top: 20px; border-radius: 999px; padding: 14px 24px; }
 .pkg-foot {
   margin-top: 30px;
   text-align: center;
@@ -2800,6 +2869,8 @@ em, i { font-style: normal; }
   .work-tile { grid-column: span 1 !important; aspect-ratio: 4/3 !important; }
   .pkg-viewport { max-width: 480px; margin-left: auto; margin-right: auto; }
   .pkg-track > .pkg-card { flex-basis: 100%; }
+  .pkg-body { padding: 26px 22px 22px; }
+  .pkg-photo-tier { font-size: 26px; }
   .tm-card { flex: 0 0 100%; }
   .team-grid { grid-template-columns: 1fr; }
   /* exec-hub handled internally */
