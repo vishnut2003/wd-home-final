@@ -671,7 +671,7 @@ em, i { font-style: normal; }
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
+  /* no scroll-behavior:smooth here (2026-10-14): the mandatory snap on load ran as a smooth scroll, which Chrome counts as a scroll and stops reporting LCP (PageSpeed NO_LCP). JS scrollTo() calls pass behavior:'smooth' themselves. */
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 4px 4px 12px;
@@ -2324,7 +2324,7 @@ em, i { font-style: normal; }
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
+  /* no scroll-behavior:smooth here (2026-10-14): the mandatory snap on load ran as a smooth scroll, which Chrome counts as a scroll and stops reporting LCP (PageSpeed NO_LCP). JS scrollTo() calls pass behavior:'smooth' themselves. */
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 12px 4px 16px;
@@ -2906,7 +2906,7 @@ em, i { font-style: normal; }
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
+  /* no scroll-behavior:smooth here (2026-10-14): the mandatory snap on load ran as a smooth scroll, which Chrome counts as a scroll and stops reporting LCP (PageSpeed NO_LCP). JS scrollTo() calls pass behavior:'smooth' themselves. */
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 4px 4px 12px;
@@ -3143,7 +3143,7 @@ em, i { font-style: normal; }
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
+    /* no scroll-behavior:smooth here (2026-10-14): the mandatory snap on load ran as a smooth scroll, which Chrome counts as a scroll and stops reporting LCP (PageSpeed NO_LCP). JS scrollTo() calls pass behavior:'smooth' themselves. */
     scrollbar-width: none;
     -ms-overflow-style: none;
     max-width: none;          /* .bank-bento { max-width: 460px; margin: 0 auto } */
