@@ -599,7 +599,7 @@ em, i { font-style: normal; }
   background: var(--ink);
   color: #fff;
   border-color: var(--ink);
-  background-image: url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&h=900&fit=crop');
+  background-image: url("../images/stats/quality-framework.webp");
   background-size: cover;
   background-position: center;
   position: relative;
@@ -1604,10 +1604,10 @@ em, i { font-style: normal; }
 .pkg-card--blue-premium { --pk-accent: #9cc2ff; --pk-dark: #0a1740; }
 .pkg-card--beige        { --pk-accent: #e6d2b0; --pk-dark: #342a22; }
 .pkg-card--black        { --pk-accent: #e8433f; --pk-dark: #0e0e0e; }
-.pkg-card--blue .pkg-media         { background-image: url("../images/packages/cover-atmos-blue-basic.jpg"); }
-.pkg-card--blue-premium .pkg-media { background-image: url("../images/packages/cover-atmos-blue-advance.jpg"); }
-.pkg-card--beige .pkg-media        { background-image: url("../images/packages/cover-avenue-beige.jpg"); }
-.pkg-card--black .pkg-media        { background-image: url("../images/packages/cover-ambience-black.jpg"); }
+.pkg-card--blue .pkg-media         { background-image: url("../images/packages/cover-atmos-blue-basic.webp"); }
+.pkg-card--blue-premium .pkg-media { background-image: url("../images/packages/cover-atmos-blue-advance.webp"); }
+.pkg-card--beige .pkg-media        { background-image: url("../images/packages/cover-avenue-beige.webp"); }
+.pkg-card--black .pkg-media        { background-image: url("../images/packages/cover-ambience-black.webp"); }
 .pkg-card {
   position: relative;
   isolation: isolate;
