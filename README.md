@@ -57,10 +57,16 @@ The website is structured, transparent, and professionally managed — mirroring
 
 ```
 index.html          ← Main page (all sections)
+how-it-works/
+  index.html        ← "How It Works" page (redesign of /how-it-works/, same copy as the live page)
 css/
   style.css         ← All styles (tokens, components, responsive)
+  how-it-works.css  ← Page styles for /how-it-works/ (.hiw-* only, loaded after style.css)
 js/
   main.js           ← All interactivity (carousel, FAQ, animations, form)
+  how-it-works.js   ← Active-step tracking, sticky rail, anchor offsets for /how-it-works/
+images/
+  how-it-works/     ← The six step illustrations (PNG + WebP)
 README.md
 ```
 
@@ -71,6 +77,7 @@ README.md
 | Path | Description |
 |------|-------------|
 | `/` or `index.html` | Main homepage |
+| `/how-it-works/` | How It Works page (serve the repo root over HTTP; root-relative links) |
 | `#hero` | Hero section |
 | `#why` | Why Choose Us carousel |
 | `#process` | The Walls & Dreams Way (5-step process) |
