@@ -97,6 +97,7 @@ html,
   letter-spacing: -.025em;
   color: var(--cream);
   margin-top: 22px;
+  text-wrap: balance;   /* two even lines ("The Walls & / Dreams Way."), never a lone word */
 }
 .hiw-h1 em { color: var(--red); font-style: normal; }
 .hiw-hero-sub {
@@ -105,6 +106,7 @@ html,
   font-size: 18px;
   line-height: 1.65;
   color: rgba(250,246,240,.75);
+  text-wrap: balance;
 }
 .hiw-hero-actions {
   display: flex;
