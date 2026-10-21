@@ -97,8 +97,9 @@ html,
   letter-spacing: -.025em;
   color: var(--cream);
   margin-top: 22px;
-  text-wrap: balance;   /* two even lines ("The Walls & / Dreams Way."), never a lone word */
 }
+/* line 1 is always "The Walls & Dreams", line 2 "Way." (hard <br> in the markup) */
+.hiw-h1-brand { white-space: nowrap; }
 .hiw-h1 em { color: var(--red); font-style: normal; }
 .hiw-hero-sub {
   margin: 22px auto 0;
@@ -479,6 +480,8 @@ html,
   .hiw-page .btn-talk { padding: 10px 12px; font-size: 12.5px; }
 
   .hiw-hero { padding: 56px 0 56px; }
+  /* "The Walls & Dreams" must stay on one line: scale with the viewport on phones (≈34px at 360px) */
+  .hiw-h1 { font-size: clamp(1.9rem, 9.4vw, 2.6rem); }
   .hiw-hero-sub { font-size: 16px; }
   .hiw-hero-actions { flex-direction: column; align-items: stretch; }
   .hiw-hero-actions .btn { justify-content: center; }
